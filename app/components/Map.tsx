@@ -1,7 +1,9 @@
+'use client';
+
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
-import type { DayData, RouteSegment } from '../data/itinerary';
-import { fetchWalkingRoute, processMultiModalRoute, type RenderedSegment } from '../utils/osrm';
+import type { DayData, RouteSegment } from '@/data/itinerary';
+import { fetchWalkingRoute, processMultiModalRoute, type RenderedSegment } from '@/utils/osrm';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icons in React-Leaflet

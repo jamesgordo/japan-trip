@@ -11,7 +11,10 @@ export interface RenderedSegment {
  * Simplifies a route by reducing the number of points
  * Uses Douglas-Peucker-like algorithm to keep only significant turns
  */
-function simplifyRoute(coordinates: [number, number][], tolerance: number = 0.00005): [number, number][] {
+function simplifyRoute(
+  coordinates: [number, number][],
+  tolerance: number = 0.00005
+): [number, number][] {
   if (coordinates.length <= 2) return coordinates;
 
   const simplified: [number, number][] = [coordinates[0]!];
@@ -61,9 +64,7 @@ export async function fetchWalkingRoute(
   }
 
   // OSRM expects coordinates in lng,lat format
-  const coordinatesString = coordinates
-    .map(([lat, lng]) => `${lng},${lat}`)
-    .join(';');
+  const coordinatesString = coordinates.map(([lat, lng]) => `${lng},${lat}`).join(';');
 
   const url = `https://router.project-osrm.org/route/v1/foot/${coordinatesString}?overview=simplified&geometries=geojson`;
 
@@ -120,9 +121,7 @@ function getSegmentStyle(mode: TransportMode): { color: string; dashArray?: stri
  * @param segments Array of route segments with transport modes
  * @returns Array of rendered segments with coordinates and styling
  */
-export async function processMultiModalRoute(
-  segments: RouteSegment[]
-): Promise<RenderedSegment[]> {
+export async function processMultiModalRoute(segments: RouteSegment[]): Promise<RenderedSegment[]> {
   const renderedSegments: RenderedSegment[] = [];
 
   for (const segment of segments) {
@@ -130,10 +129,7 @@ export async function processMultiModalRoute(
 
     if (segment.mode === 'walk' && !segment.simplified) {
       // Fetch walking route from OSRM for detailed street-following routes
-      const coordinates = await fetchWalkingRoute(
-        [segment.from, segment.to],
-        false
-      );
+      const coordinates = await fetchWalkingRoute([segment.from, segment.to], false);
       renderedSegments.push({
         coordinates,
         mode: segment.mode,

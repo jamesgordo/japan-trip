@@ -1,6 +1,7 @@
 Update `src/data/itinerary.ts` with this latest schedule and stops. Search / Provide the correct map coordinates.
 
 ## Monday
+
 - Shinsekai
 - Tsutenkaku
 - Den Den Town
@@ -9,6 +10,7 @@ Update `src/data/itinerary.ts` with this latest schedule and stops. Search / Pro
 - Hozenji Yokocho
 
 ## Tuesday
+
 - Kuromon Ichiba Market
 - Animate Osaka Nipponbashi
 - Bandai Gachapon
@@ -17,6 +19,7 @@ Update `src/data/itinerary.ts` with this latest schedule and stops. Search / Pro
 - Umeda Sky Building
 
 ## Wednesday
+
 - Train: Shin-Imamiya → Kyoto
   - JR Osaka Loop → Osaka Station
   - JR Special Rapid → Kyoto

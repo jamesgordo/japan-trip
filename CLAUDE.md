@@ -28,6 +28,7 @@ Mobile-first React application for visualizing a day-by-day walking itinerary th
 ### Data Structure
 
 The itinerary data is located in `docs/dataset.ts` and contains:
+
 - 6 days (Monday-Saturday)
 - Each day has: `id`, `label`, `city`, `center` (map coordinates), `pins` (locations), and `route` (polyline coordinates)
 - Days are split between Osaka (Mon-Wed) and Tokyo (Thu-Sat)

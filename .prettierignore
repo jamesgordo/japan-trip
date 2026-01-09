@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+# Next.js
+.next
+out
+*.tsbuildinfo
+next-env.d.ts
+
+# Production
+build
+dist
+dist-ssr
+
+# Logs
+*.log
+
+# Environment
+.env
+.env*.local
+
+# Cache
+.cache
+*.tsbuildinfo
+
+# Package manager
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Editor
+.vscode
+.idea

@@ -30,12 +30,14 @@ A mobile-first React application that visualizes a day-by-day walking itinerary 
 ### Setup
 
 1. Clone the repository:
+
 ```bash
 git clone <repository-url>
 cd japan-trip
 ```
 
 2. Install dependencies:
+
 ```bash
 pnpm install
 # or
@@ -43,6 +45,7 @@ npm install
 ```
 
 3. Start the development server:
+
 ```bash
 pnpm dev
 # or
@@ -81,11 +84,13 @@ japan-trip/
 ## Itinerary
 
 ### Osaka (Monday - Wednesday)
+
 - **Monday**: Shinsekai & Tennoji
 - **Tuesday**: Namba & Dotonbori
 - **Wednesday**: Umeda Skyline
 
 ### Tokyo (Thursday - Saturday)
+
 - **Thursday**: Tokyo Arrival & Riverside
 - **Friday**: Asakusa & Skytree
 - **Saturday**: Kappabashi & Farewell Tokyo

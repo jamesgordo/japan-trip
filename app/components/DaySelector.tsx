@@ -1,5 +1,7 @@
-import type { DayId } from '../data/itinerary';
-import { itinerary } from '../data/itinerary';
+'use client';
+
+import type { DayId } from '@/data/itinerary';
+import { itinerary } from '@/data/itinerary';
 
 interface DaySelectorProps {
   selectedDay: DayId;

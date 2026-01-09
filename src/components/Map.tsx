@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import type { DayData } from '../data/itinerary';
+import { fetchWalkingRoute } from '../utils/osrm';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icons in React-Leaflet
@@ -34,9 +35,23 @@ function MapUpdater({ center }: { center: [number, number] }) {
 
 export function Map({ dayData }: MapProps) {
   const center: [number, number] = [dayData.center[0]!, dayData.center[1]!];
-  const routeCoordinates: [number, number][] = dayData.route.map(
-    ([lat, lng]) => [lat!, lng!]
-  );
+  const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
+  const [isLoadingRoute, setIsLoadingRoute] = useState(true);
+
+  // Fetch OSRM walking route when dayData changes
+  useEffect(() => {
+    const loadRoute = async () => {
+      setIsLoadingRoute(true);
+      const waypoints: [number, number][] = dayData.route.map(
+        ([lat, lng]) => [lat!, lng!]
+      );
+      const osrmRoute = await fetchWalkingRoute(waypoints);
+      setRouteCoordinates(osrmRoute);
+      setIsLoadingRoute(false);
+    };
+
+    loadRoute();
+  }, [dayData.id]);
 
   return (
     <MapContainer
@@ -63,12 +78,14 @@ export function Map({ dayData }: MapProps) {
       ))}
 
       {/* Render walking route */}
-      <Polyline
-        positions={routeCoordinates}
-        color="#3b82f6"
-        weight={3}
-        opacity={0.7}
-      />
+      {!isLoadingRoute && routeCoordinates.length > 0 && (
+        <Polyline
+          positions={routeCoordinates}
+          color="#3b82f6"
+          weight={3}
+          opacity={0.7}
+        />
+      )}
     </MapContainer>
   );
 }

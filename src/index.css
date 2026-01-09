@@ -26,3 +26,12 @@ body {
 .leaflet-popup-content {
   @apply font-medium;
 }
+
+/* Dark mode Leaflet popup styles */
+.dark .leaflet-popup-content-wrapper {
+  @apply bg-gray-800 text-gray-100;
+}
+
+.dark .leaflet-popup-tip {
+  background-color: rgb(31 41 55);
+}

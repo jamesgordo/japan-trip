@@ -20,6 +20,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 interface MapProps {
   dayData: DayData;
+  isDarkMode: boolean;
 }
 
 // Component to handle map center updates
@@ -33,13 +34,22 @@ function MapUpdater({ center }: { center: [number, number] }) {
   return null;
 }
 
-export function Map({ dayData }: MapProps) {
+export function Map({ dayData, isDarkMode }: MapProps) {
   const center: [number, number] = [dayData.center[0]!, dayData.center[1]!];
   const [renderedSegments, setRenderedSegments] = useState<RenderedSegment[]>([]);
   const [isLoadingRoute, setIsLoadingRoute] = useState(true);
 
   // Check if dayData uses new multi-modal format or old simple route format
   const isMultiModal = 'segments' in dayData;
+
+  // Tile layer URL based on dark mode
+  const tileUrl = isDarkMode
+    ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+
+  const tileAttribution = isDarkMode
+    ? '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    : '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
 
   // Fetch routes when dayData changes
   useEffect(() => {
@@ -81,8 +91,9 @@ export function Map({ dayData }: MapProps) {
       scrollWheelZoom={true}
     >
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution={tileAttribution}
+        url={tileUrl}
+        key={isDarkMode ? 'dark' : 'light'}
       />
 
       <MapUpdater center={center} />

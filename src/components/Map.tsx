@@ -39,9 +39,6 @@ export function Map({ dayData, isDarkMode }: MapProps) {
   const [renderedSegments, setRenderedSegments] = useState<RenderedSegment[]>([]);
   const [isLoadingRoute, setIsLoadingRoute] = useState(true);
 
-  // Check if dayData uses new multi-modal format or old simple route format
-  const isMultiModal = 'segments' in dayData;
-
   // Tile layer URL based on dark mode
   const tileUrl = isDarkMode
     ? 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
@@ -53,34 +50,49 @@ export function Map({ dayData, isDarkMode }: MapProps) {
 
   // Fetch routes when dayData changes
   useEffect(() => {
+    let cancelled = false;
+
     const loadRoute = async () => {
       setIsLoadingRoute(true);
+
+      // Check if dayData uses new multi-modal format or old simple route format
+      const isMultiModal = 'segments' in dayData;
 
       if (isMultiModal) {
         // New multi-modal format with segments
         const segments = (dayData as DayData & { segments: RouteSegment[] }).segments;
         const rendered = await processMultiModalRoute(segments);
-        setRenderedSegments(rendered);
+
+        if (!cancelled) {
+          setRenderedSegments(rendered);
+          setIsLoadingRoute(false);
+        }
       } else {
         // Legacy format: simple walking route
         const waypoints: [number, number][] = dayData.route.map(
           ([lat, lng]) => [lat!, lng!]
         );
         const osrmRoute = await fetchWalkingRoute(waypoints);
-        setRenderedSegments([
-          {
-            coordinates: osrmRoute,
-            mode: 'walk',
-            color: '#3b82f6',
-          },
-        ]);
-      }
 
-      setIsLoadingRoute(false);
+        if (!cancelled) {
+          setRenderedSegments([
+            {
+              coordinates: osrmRoute,
+              mode: 'walk',
+              color: '#3b82f6',
+            },
+          ]);
+          setIsLoadingRoute(false);
+        }
+      }
     };
 
     loadRoute();
-  }, [dayData.id, isMultiModal]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dayData.id]);
 
   return (
     <MapContainer
@@ -111,7 +123,7 @@ export function Map({ dayData, isDarkMode }: MapProps) {
       {!isLoadingRoute &&
         renderedSegments.map((segment, index) => (
           <Polyline
-            key={index}
+            key={`${dayData.id}-segment-${index}`}
             positions={segment.coordinates}
             color={segment.color}
             dashArray={segment.dashArray}

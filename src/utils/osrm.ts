@@ -128,11 +128,11 @@ export async function processMultiModalRoute(
   for (const segment of segments) {
     const style = getSegmentStyle(segment.mode);
 
-    if (segment.mode === 'walk') {
-      // Fetch walking route from OSRM (or simplified direct line)
+    if (segment.mode === 'walk' && !segment.simplified) {
+      // Fetch walking route from OSRM for detailed street-following routes
       const coordinates = await fetchWalkingRoute(
         [segment.from, segment.to],
-        segment.simplified ?? false
+        false
       );
       renderedSegments.push({
         coordinates,
@@ -140,8 +140,8 @@ export async function processMultiModalRoute(
         ...style,
       });
     } else {
-      // For transit (train/subway/bus), draw a straight dashed line
-      // In a production app, you'd integrate with a transit API
+      // For simplified routes OR any transit (train/subway/bus), draw straight lines
+      // This includes: walk segments with simplified=true, and all train/subway/bus segments
       renderedSegments.push({
         coordinates: [segment.from, segment.to],
         mode: segment.mode,

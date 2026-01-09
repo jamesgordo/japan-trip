@@ -37,6 +37,26 @@ export const itinerary = {
       [34.6672, 135.5009],
       [34.6721, 135.5015],
     ],
+    segments: [
+      {
+        from: [34.6687, 135.5012],
+        to: [34.6685, 135.5010],
+        mode: 'walk' as const,
+        simplified: true,
+      },
+      {
+        from: [34.6685, 135.5010],
+        to: [34.6672, 135.5009],
+        mode: 'walk' as const,
+        simplified: true,
+      },
+      {
+        from: [34.6672, 135.5009],
+        to: [34.6721, 135.5015],
+        mode: 'walk' as const,
+        simplified: true,
+      },
+    ],
   },
 
   wednesday: {
@@ -51,6 +71,13 @@ export const itinerary = {
     route: [
       [34.7025, 135.4959],
       [34.7055, 135.4983],
+    ],
+    segments: [
+      {
+        from: [34.7025, 135.4959],
+        to: [34.7055, 135.4983],
+        mode: 'walk' as const,
+      },
     ],
   },
 
@@ -78,6 +105,7 @@ export const itinerary = {
       { name: "Senso-ji Temple", lat: 35.7148, lng: 139.7967 },
       { name: "Nakamise Street", lat: 35.7139, lng: 139.7963 },
       { name: "Asakusa Culture Tourist Center", lat: 35.7117, lng: 139.7976 },
+      { name: "Asakusa Station", lat: 35.7106, lng: 139.7966 },
       { name: "Tokyo Skytree", lat: 35.7100, lng: 139.8107 },
     ],
     route: [
@@ -85,6 +113,28 @@ export const itinerary = {
       [35.7139, 139.7963],
       [35.7117, 139.7976],
       [35.7100, 139.8107],
+    ],
+    segments: [
+      {
+        from: [35.7148, 139.7967],
+        to: [35.7139, 139.7963],
+        mode: 'walk' as const,
+      },
+      {
+        from: [35.7139, 139.7963],
+        to: [35.7117, 139.7976],
+        mode: 'walk' as const,
+      },
+      {
+        from: [35.7117, 139.7976],
+        to: [35.7106, 139.7966],
+        mode: 'walk' as const,
+      },
+      {
+        from: [35.7106, 139.7966],
+        to: [35.7100, 139.8107],
+        mode: 'subway' as const,
+      },
     ],
   },
 
@@ -105,6 +155,15 @@ export const itinerary = {
     ],
   },
 };
+
+export type TransportMode = 'walk' | 'train' | 'subway' | 'bus';
+
+export interface RouteSegment {
+  from: [number, number];
+  to: [number, number];
+  mode: TransportMode;
+  simplified?: boolean; // If true, draws direct line instead of following streets
+}
 
 export type DayId = keyof typeof itinerary;
 export type DayData = typeof itinerary[DayId];

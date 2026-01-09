@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
-import type { DayData } from '../data/itinerary';
-import { fetchWalkingRoute } from '../utils/osrm';
+import type { DayData, RouteSegment } from '../data/itinerary';
+import { fetchWalkingRoute, processMultiModalRoute, type RenderedSegment } from '../utils/osrm';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icons in React-Leaflet
@@ -35,23 +35,42 @@ function MapUpdater({ center }: { center: [number, number] }) {
 
 export function Map({ dayData }: MapProps) {
   const center: [number, number] = [dayData.center[0]!, dayData.center[1]!];
-  const [routeCoordinates, setRouteCoordinates] = useState<[number, number][]>([]);
+  const [renderedSegments, setRenderedSegments] = useState<RenderedSegment[]>([]);
   const [isLoadingRoute, setIsLoadingRoute] = useState(true);
 
-  // Fetch OSRM walking route when dayData changes
+  // Check if dayData uses new multi-modal format or old simple route format
+  const isMultiModal = 'segments' in dayData;
+
+  // Fetch routes when dayData changes
   useEffect(() => {
     const loadRoute = async () => {
       setIsLoadingRoute(true);
-      const waypoints: [number, number][] = dayData.route.map(
-        ([lat, lng]) => [lat!, lng!]
-      );
-      const osrmRoute = await fetchWalkingRoute(waypoints);
-      setRouteCoordinates(osrmRoute);
+
+      if (isMultiModal) {
+        // New multi-modal format with segments
+        const segments = (dayData as DayData & { segments: RouteSegment[] }).segments;
+        const rendered = await processMultiModalRoute(segments);
+        setRenderedSegments(rendered);
+      } else {
+        // Legacy format: simple walking route
+        const waypoints: [number, number][] = dayData.route.map(
+          ([lat, lng]) => [lat!, lng!]
+        );
+        const osrmRoute = await fetchWalkingRoute(waypoints);
+        setRenderedSegments([
+          {
+            coordinates: osrmRoute,
+            mode: 'walk',
+            color: '#3b82f6',
+          },
+        ]);
+      }
+
       setIsLoadingRoute(false);
     };
 
     loadRoute();
-  }, [dayData.id]);
+  }, [dayData.id, isMultiModal]);
 
   return (
     <MapContainer
@@ -77,15 +96,18 @@ export function Map({ dayData }: MapProps) {
         </Marker>
       ))}
 
-      {/* Render walking route */}
-      {!isLoadingRoute && routeCoordinates.length > 0 && (
-        <Polyline
-          positions={routeCoordinates}
-          color="#3b82f6"
-          weight={3}
-          opacity={0.7}
-        />
-      )}
+      {/* Render route segments */}
+      {!isLoadingRoute &&
+        renderedSegments.map((segment, index) => (
+          <Polyline
+            key={index}
+            positions={segment.coordinates}
+            color={segment.color}
+            dashArray={segment.dashArray}
+            weight={segment.mode === 'walk' ? 3 : 5}
+            opacity={segment.mode === 'walk' ? 0.7 : 0.9}
+          />
+        ))}
     </MapContainer>
   );
 }
